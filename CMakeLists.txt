@@ -7,7 +7,7 @@ if (NOT SKIP_AUTOMATE_VCPKG)
     include(cmake/automate-vcpkg.cmake)
 
     vcpkg_bootstrap()
-    vcpkg_install_packages(easyhook)
+    vcpkg_install_packages(easyhook loguru)
 endif()
 
 project(eveloader2)
