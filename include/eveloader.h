@@ -12,6 +12,7 @@
 #define EVE_STARTUP_FLAG_NOFSMAP = 1 << 2
 
 #define LOADER_CONFIG "config.ini"
+#define OVERLAY_PATH "\\eveloader2"
 
 struct eve_startup {
     uint64_t flags;

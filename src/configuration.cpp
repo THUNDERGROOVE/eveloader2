@@ -27,9 +27,9 @@ void configuration::load() {
         exit(-2);
     }
 
-    this->eve_installation = r.Get("Launcher", "eve_installation", "C:\\Crucible\\");
-    this->use_console = r.GetBoolean("Launcher", "use_console", false);
-    this->use_fsmapper = r.GetBoolean("Launcher", "use_fsmapper", true);
+    this->eve_installation = r.Get("eveloader", "eve_installation", "C:\\Crucible\\");
+    this->use_console = r.GetBoolean("eveloader", "use_console", false);
+    this->use_fsmapper = r.GetBoolean("eveloader", "use_fsmapper", true);
 }
 
 configuration cfg;

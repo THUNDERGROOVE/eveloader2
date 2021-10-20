@@ -7,7 +7,44 @@
 
 #include "eveloader.h"
 #include "configuration.h"
+#include <loguru/loguru.cpp>
+#include <loguru/loguru.hpp>
+#include <assert.h>
+#include <vector>
 
+static bool parse_argument(const char *argument, char **value) {
+    for (int i = 0; i < __argc; i++) {
+        char *t = __argv[i];
+        if (strcmp(argument, t) == 0) {
+            if (__argc >= i + 1) {
+                *value = __argv[i + 1];
+            } else {
+                *value = NULL;
+            }
+            return true;
+        }
+    }
+
+    return false;
+}
+
+static bool has_argument(const char *argument) {
+    for (int i = 0; i < __argc; i++) {
+        char *t = __argv[i];
+        if (strcmp(argument, t) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static std::string get_overlay_path() {
+    char path[MAX_PATH] = {0};
+    SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA, NULL, 0, path);
+    std::string o = std::string(path);
+    o.append(OVERLAY_PATH);
+    return o;
+}
 
 static int CALLBACK browse_callback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData) {
     if(uMsg == BFFM_INITIALIZED) {
@@ -71,12 +108,119 @@ void run_initial_setup() {
     cfg.save();
 }
 
+std::wstring to_wide (const std::string &multi) {
+    std::wstring wide; wchar_t w; mbstate_t mb {};
+    size_t n = 0, len = multi.length () + 1;
+    while (auto res = mbrtowc (&w, multi.c_str () + n, len - n, &mb)) {
+        if (res == size_t (-1) || res == size_t (-2))
+            throw "invalid encoding";
+
+        n += res;
+        wide += w;
+    }
+    return wide;
+}
+
+
+void runtime_validation() {
+    std::string exefile_path = std::string(cfg.eve_installation);
+    exefile_path.append("\\bin\\exefile.exe");
+
+    std::string dll_path = std::string("eveloader2_dll.dll");
+
+    assert(std::filesystem::exists(cfg.eve_installation.c_str()));
+    assert(std::filesystem::exists(exefile_path));
+    assert(std::filesystem::exists(dll_path.c_str()));
+}
+
+int start_eve_client(char *host) {
+    char loader_path[MAX_PATH] = {0};
+    GetCurrentDirectoryA(MAX_PATH, loader_path);
+    std::string dll_path = std::string(loader_path);
+    dll_path.append("\\eveloader2_dll.dll");
+
+    PROCESS_INFORMATION proc_info;
+    memset(&proc_info, 0, sizeof(proc_info));
+
+    STARTUPINFOA start_info;
+    memset(&start_info, 0, sizeof(start_info));
+    start_info.cb = sizeof(start_info);
+
+    std::vector<std::string> arguments;
+
+    if (cfg.use_console) {
+        arguments.push_back("/console");
+    } else {
+        arguments.push_back("/noconsole");
+    }
+
+    if (host != nullptr) {
+        char host_buffer[128] = {0};
+        snprintf(host_buffer, 127, "/server:%s", host);
+        arguments.push_back(std::string(host_buffer));
+    }
+
+    std::string joined_args = std::string();
+    for (int i = 0; i < arguments.size(); i++) {
+        joined_args.append(arguments[i]);
+        joined_args.append(" ");
+    }
+
+    std::string exe_path = cfg.eve_installation;
+    exe_path.append("\\bin\\exefile.exe");
+
+    eve_startup startup = {0};
+
+    NTSTATUS status = RhCreateAndInject(
+            (wchar_t *)to_wide(exe_path).c_str(),
+            (wchar_t *)to_wide(joined_args).c_str(),
+            0,
+            EASYHOOK_INJECT_DEFAULT,
+            (wchar_t *)to_wide(dll_path).c_str(),
+            nullptr,
+            &startup,
+            sizeof(startup),
+            &proc_info.dwProcessId);
+
+    if (status != 0) {
+        auto err = RtlGetLastErrorString();
+        MessageBoxW(NULL, err, L"ERROR", MB_OK);
+        DebugBreak();
+        return -1;
+    }
+
+    return 0;
+}
+
 int main() {
+    loguru::add_file("eveloader2.log", loguru::Truncate, loguru::Verbosity_INFO);
+    loguru::g_colorlogtostderr = false;
+    LOG_F(INFO, "eveloader2 is starting.");
+    std::string overlay_path = get_overlay_path();
+    LOG_F(INFO, "fsmapper overlay path found to be %s", overlay_path.c_str());
     if (!std::filesystem::exists(LOADER_CONFIG)) {
+        LOG_F(INFO, "%s is missing, triggering initial setup", LOADER_CONFIG);
         run_initial_setup();
     } else {
+        LOG_F(INFO, "Loading %s", LOADER_CONFIG);
         cfg.load();
     }
+
+    if (CreateDirectoryA(overlay_path.c_str(), nullptr) || ERROR_ALREADY_EXISTS == GetLastError()) {
+        LOG_F(INFO, "fsmapper overlay path exists");
+    } else {
+        LOG_F(INFO, "Unable to create fsmapper overlay path.");
+        exit(-1);
+    }
+
+    runtime_validation();
+
+    char *host = nullptr;
+    //char *port = nullptr;
+    parse_argument("-h", &host);
+    //parse_argument("-port", &port);
+
+    start_eve_client(host);
 
     return 0;
 }
