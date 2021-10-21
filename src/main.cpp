@@ -151,7 +151,7 @@ int start_eve_client(char *host, char *username, char *password) {
     }
 
     if (username != nullptr && password != nullptr) {
-        std::string login_arg = std::string("/login:");
+        std::string login_arg = std::string(" /login:");
         login_arg.append(username);
         login_arg.append(":");
         login_arg.append(password);
@@ -161,14 +161,14 @@ int start_eve_client(char *host, char *username, char *password) {
 
     if (host != nullptr) {
         char host_buffer[128] = {0};
-        snprintf(host_buffer, 127, "/server:%s", host);
+        snprintf(host_buffer, 127, " /server:%s", host);
         arguments.push_back(std::string(host_buffer));
     }
 
     std::string joined_args = std::string();
     for (int i = 0; i < arguments.size(); i++) {
         joined_args.append(arguments[i]);
-        joined_args.append(" ");
+        //joined_args.append("");
     }
 
     std::string exe_path = cfg.eve_installation;

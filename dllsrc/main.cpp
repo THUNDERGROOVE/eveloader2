@@ -59,9 +59,6 @@ static void start_console() {
 }
 
 void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
-#ifndef NDEBUG // sleep for 5 seconds in debug mode to allow user to attach a debugger.
-    Sleep(5000);
-#endif
     // @TODO(NP): Save in ProgramFiles dir
     loguru::add_file("eveloader2_dll.log", loguru::Truncate, loguru::Verbosity_INFO);
     if (in_remote_info->UserDataSize != sizeof(eve_startup)) {
@@ -69,9 +66,15 @@ void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
         exit(-100);
     }
     eve_startup *startup = (eve_startup *)in_remote_info->UserData;
-    //RhWakeUpProcess();
 
+    //Sleep(2000);
     LOG_F(INFO, "Loading python symbols.");
     load_py_symbols();
+
+    RhWakeUpProcess();
+    // TODO(NP): Find a way to verify that the game has been initialized enough to proceed.
+    Sleep(6000); // The magic number for most people, I hope!
     start_console();
+
+    return;
 }

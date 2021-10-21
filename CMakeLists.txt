@@ -54,3 +54,12 @@ if (CMAKE_BUILD_TYPE EQUAL "Debug")
 else()
     target_link_libraries(eveloader2_dll PRIVATE  "python27.lib")
 endif()
+
+add_custom_target(eveloader2_release_zip COMMAND
+        ${CMAKE_COMMAND} -E tar "cfv" "release.zip" --format=zip
+        "${CMAKE_CURRENT_BINARY_DIR}/eveloader2.exe"
+        "${CMAKE_CURRENT_BINARY_DIR}/eveloader2_dll.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/EasyHook32.dll"
+        )
+
+add_dependencies(eveloader2_release_zip eveloader2)
