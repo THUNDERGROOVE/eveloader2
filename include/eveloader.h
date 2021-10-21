@@ -8,8 +8,8 @@
 #include <stdint.h>
 #include <windows.h>
 
-#define EVE_STARTUP_FLAG_CONSOLE = 1 << 1
-#define EVE_STARTUP_FLAG_NOFSMAP = 1 << 2
+#define EVE_STARTUP_FLAG_CONSOLE 1 << 1
+#define EVE_STARTUP_FLAG_NOFSMAP 1 << 2
 
 #define LOADER_CONFIG "config.ini"
 #define OVERLAY_PATH "\\eveloader2"

@@ -1,16 +1,19 @@
 #include <iostream>
 
 #include <easyhook/easyhook.h>
-#include <filesystem>
-
-#include <shlobj.h>
+#include <loguru/loguru.cpp>
+#include <loguru/loguru.hpp>
 
 #include "eveloader.h"
 #include "configuration.h"
-#include <loguru/loguru.cpp>
-#include <loguru/loguru.hpp>
-#include <assert.h>
+#include "overlay.h"
+#include "blue_patcher.h"
+
+#include <filesystem>
 #include <vector>
+
+#include <assert.h>
+#include <shlobj.h>
 
 static bool parse_argument(const char *argument, char **value) {
     for (int i = 0; i < __argc; i++) {
@@ -38,13 +41,6 @@ static bool has_argument(const char *argument) {
     return false;
 }
 
-static std::string get_overlay_path() {
-    char path[MAX_PATH] = {0};
-    SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA, NULL, 0, path);
-    std::string o = std::string(path);
-    o.append(OVERLAY_PATH);
-    return o;
-}
 
 static int CALLBACK browse_callback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData) {
     if(uMsg == BFFM_INITIALIZED) {
@@ -133,7 +129,7 @@ void runtime_validation() {
     assert(std::filesystem::exists(dll_path.c_str()));
 }
 
-int start_eve_client(char *host) {
+int start_eve_client(char *host, char *username, char *password) {
     char loader_path[MAX_PATH] = {0};
     GetCurrentDirectoryA(MAX_PATH, loader_path);
     std::string dll_path = std::string(loader_path);
@@ -154,6 +150,15 @@ int start_eve_client(char *host) {
         arguments.push_back("/noconsole");
     }
 
+    if (username != nullptr && password != nullptr) {
+        std::string login_arg = std::string("/login:");
+        login_arg.append(username);
+        login_arg.append(":");
+        login_arg.append(password);
+
+        arguments.push_back(login_arg);
+    }
+
     if (host != nullptr) {
         char host_buffer[128] = {0};
         snprintf(host_buffer, 127, "/server:%s", host);
@@ -170,6 +175,14 @@ int start_eve_client(char *host) {
     exe_path.append("\\bin\\exefile.exe");
 
     eve_startup startup = {0};
+
+    if (cfg.use_console) {
+        startup.flags |= EVE_STARTUP_FLAG_CONSOLE;
+    }
+
+    if (!cfg.use_fsmapper) {
+        startup.flags |= EVE_STARTUP_FLAG_NOFSMAP;
+    }
 
     NTSTATUS status = RhCreateAndInject(
             (wchar_t *)to_wide(exe_path).c_str(),
@@ -206,21 +219,22 @@ int main() {
         cfg.load();
     }
 
-    if (CreateDirectoryA(overlay_path.c_str(), nullptr) || ERROR_ALREADY_EXISTS == GetLastError()) {
-        LOG_F(INFO, "fsmapper overlay path exists");
-    } else {
-        LOG_F(INFO, "Unable to create fsmapper overlay path.");
-        exit(-1);
-    }
+    ensure_overlay_setup();
 
     runtime_validation();
+    check_blue_patch();
 
     char *host = nullptr;
+    char *username = nullptr;
+    char *password = nullptr;
+
     //char *port = nullptr;
     parse_argument("-h", &host);
+    parse_argument("-u", &username);
+    parse_argument("-p", &password);
     //parse_argument("-port", &port);
 
-    start_eve_client(host);
+    start_eve_client(host, username, password);
 
     return 0;
 }
