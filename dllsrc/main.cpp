@@ -8,16 +8,17 @@
 #include "pyloader.h"
 #include "pydecls.h"
 #include "eveloader.h"
+#include "hook_manager.h"
+#include "hooks.h"
 
 #include <loguru/loguru.cpp>
 
 extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* inRemoteInfo);
 
 
-static PyObject *run_script(const char *script) {
+static void run_script(const char *script) {
     if (script == nullptr) {
         LOG_F(WARNING, "run_script called with null script value");
-        return nullptr;
     }
 
     // @TODO(np): properly dispose of these values.
@@ -66,6 +67,13 @@ void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
         exit(-100);
     }
     eve_startup *startup = (eve_startup *)in_remote_info->UserData;
+    hooks = new hook_manager();
+
+
+    if (!((startup->flags & EVE_STARTUP_FLAG_NOFSMAP) != 0)) {
+        LOG_F(INFO, "Installing LoadLibraryA(FSMapper) hook!");
+        hooks->install_hook(LoadLibraryA, _LoadLibraryA, "LoadLibraryA(FSMapper)");
+    }
 
     //Sleep(2000);
     LOG_F(INFO, "Loading python symbols.");
@@ -77,6 +85,7 @@ void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
         Sleep(6000); // The magic number for most people, I hope!
         start_console();
     }
+
 
     return;
 }
