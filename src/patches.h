@@ -41,7 +41,7 @@ static patch patches[] = {
         //{"pyos.packaged R/O", "\x89\x3D\x24\x52", "\x89\x35\x24\x52", 4},
         //{"Packaged Client 2", "\x89\x3D\x30\x52", "\x89\x35\x30\x52", 4},
         // \x89\x3D\x24\x52\x37\x51
-        {NULL, NULL, NULL, NULL}
+        {NULL, NULL, NULL, 0}
 };
 
 #endif //EVELOADER2_PATCHES_H

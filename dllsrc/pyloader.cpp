@@ -8,28 +8,7 @@
 
 #include "psapi.h"
 
-void *memmem(const void *l, size_t l_len, const void *s, size_t s_len) {
-    char *cur, *last;
-    const char *cl = (const char *)l;
-    const char *cs = (const char *)s;
-
-    if (l_len == 0 || s_len == 0)
-        return NULL;
-
-    if (l_len < s_len)
-        return NULL;
-
-    if (s_len == 1)
-        return (void *)memchr(l, (int)*cs, l_len);
-
-    last = (char *)cl + l_len - s_len;
-
-    for (cur = (char *)cl; cur <= last; cur++)
-        if (cur[0] == cs[0] && memcmp(cur, cs, s_len) == 0)
-            return cur;
-
-    return NULL;
-}
+#include "eveloader_util.hpp"
 
 static const char *compile_strings_pattern = "\x55\x8B\xEC\x53\x8B\x5D\x14\x56\xE8\x8E\x75\xE5\xFF\x8B\xF0\x85\xF6\x75\x2E\xEB\x51\x85\xDB\x74\x18\xF7\x03";
 #define compile_strings_pattern_size 27

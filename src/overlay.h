@@ -7,7 +7,6 @@
 
 #include <string>
 
-std::string get_overlay_path();
 std::string get_blue_dll_path();
 void ensure_overlay_setup();
 

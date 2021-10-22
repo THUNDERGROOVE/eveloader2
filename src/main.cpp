@@ -5,6 +5,8 @@
 #include <loguru/loguru.hpp>
 
 #include "eveloader.h"
+#include "eveloader_util.hpp"
+
 #include "configuration.h"
 #include "overlay.h"
 #include "blue_patcher.h"

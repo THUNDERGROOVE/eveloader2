@@ -5,6 +5,7 @@
 #include "overlay.h"
 #include "eveloader.h"
 #include "configuration.h"
+#include "eveloader_util.hpp"
 
 #include <loguru/loguru.hpp>
 
@@ -13,13 +14,6 @@
 
 #include <filesystem>
 
-std::string get_overlay_path() {
-    char path[MAX_PATH] = {0};
-    SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA, NULL, 0, path);
-    std::string o = std::string(path);
-    o.append(OVERLAY_PATH);
-    return o;
-}
 
 std::string get_blue_dll_path() {
     std::string base_path = std::string();

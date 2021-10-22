@@ -30,9 +30,20 @@ set(eveloader2_src
         src/patches.h
         src/crc32.cpp
         src/crc32.h
+        include/eveloader_util.hpp
         )
 
-set(eveloader2_dll_src dllsrc/dllmain.cpp dllsrc/main.cpp include/eveloader.h dllsrc/pyloader.cpp dllsrc/pyloader.h)
+set(eveloader2_dll_src
+        dllsrc/dllmain.cpp
+        dllsrc/main.cpp
+        include/eveloader.h
+        dllsrc/pyloader.cpp
+        dllsrc/pyloader.h
+        dllsrc/hook_manager.cpp
+        dllsrc/hook_manager.h
+        dllsrc/hooks.cpp
+        dllsrc/hooks.h
+        )
 
 add_executable(eveloader2 ${eveloader2_src})
 add_library(eveloader2_dll SHARED ${eveloader2_dll_src})
@@ -43,7 +54,7 @@ target_link_libraries(eveloader2 PRIVATE "easyhook32.lib")
 
 target_include_directories(eveloader2_dll PUBLIC SYSTEM "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include" "${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/deps/python/include" "${CMAKE_SOURCE_DIR}/deps/python/include/Stackless")
 target_link_directories(eveloader2_dll PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib" "${CMAKE_SOURCE_DIR}/deps/python/lib")
-target_link_libraries(eveloader2_dll PRIVATE  "easyhook32.lib")
+target_link_libraries(eveloader2_dll PRIVATE  "easyhook32.lib" "psapi.lib")
 
 add_dependencies(eveloader2 eveloader2_dll)
 

@@ -72,9 +72,11 @@ void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
     load_py_symbols();
 
     RhWakeUpProcess();
-    // TODO(NP): Find a way to verify that the game has been initialized enough to proceed.
-    Sleep(6000); // The magic number for most people, I hope!
-    start_console();
+    if ((startup->flags & EVE_STARTUP_FLAG_CONSOLE) != 0) {
+        // TODO(NP): Find a way to verify that the game has been initialized enough to proceed.
+        Sleep(6000); // The magic number for most people, I hope!
+        start_console();
+    }
 
     return;
 }
