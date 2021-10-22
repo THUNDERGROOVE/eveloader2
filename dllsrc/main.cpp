@@ -73,6 +73,8 @@ void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
     if (!((startup->flags & EVE_STARTUP_FLAG_NOFSMAP) != 0)) {
         LOG_F(INFO, "Installing LoadLibraryA(FSMapper) hook!");
         hooks->install_hook(LoadLibraryA, _LoadLibraryA, "LoadLibraryA(FSMapper)");
+        LOG_F(INFO, "Installing CreateFileW(FSMapper) hook!");
+        hooks->install_hook(CreateFileW, _CreateFileW, "CreateFileW(FSMapper)");
     }
 
     //Sleep(2000);

@@ -6,6 +6,8 @@
 #include "eveloader_util.hpp"
 
 #include <loguru/loguru.hpp>
+#include <algorithm>
+#include <filesystem>
 
 HMODULE WINAPI _LoadLibraryA(const char *libname) {
     std::string overlay_path = get_overlay_path();
@@ -19,4 +21,65 @@ HMODULE WINAPI _LoadLibraryA(const char *libname) {
     }
 
     return nullptr;
+}
+
+static const char *mapped_files[] = {
+        "script/compiled.code",
+        "script/devtools.code",
+        "start.ini",
+        "common.ini",
+        "lib/carbonlib.ccp",
+        "lib/carbonstdlib.ccp",
+        "lib/evelib.ccp",
+        NULL,
+};
+
+bool mapped_found[] = { false, false, false, false, false, false, false };
+
+std::string wide_tostr(LPCWSTR pwsz) {
+    int cch = WideCharToMultiByte(CP_ACP, 0, pwsz, -1, 0, 0, NULL, NULL);
+
+    char *psz = new char[cch];
+
+    WideCharToMultiByte(CP_ACP, 0, pwsz, -1, psz, cch, NULL, NULL);
+
+    std::string st(psz);
+    delete[] psz;
+
+    return st;
+}
+
+HANDLE WINAPI _CreateFileW(LPCWSTR name, DWORD access, DWORD shareMode, LPSECURITY_ATTRIBUTES sec, DWORD disp, DWORD flags, HANDLE templ) {
+    int i = 0;
+    const char *t = mapped_files[i];
+
+    std::string n = wide_tostr(name);
+
+    while (true) {
+        std::string _path(t);
+        std::replace(_path.begin(), _path.end(), '\\', '/');
+        std::replace(n.begin(), n.end(), '\\', '/');
+
+        if (n.find(_path) == std::string::npos) {
+            i++;
+            t = mapped_files[i];
+
+            if (t == nullptr) {
+                break;
+            }
+            continue;
+        }
+
+        std::string overlay_path = get_overlay_path();
+        overlay_path.append("/");
+        overlay_path.append(t);
+        if (!std::filesystem::exists(overlay_path)) {
+            LOG_F(INFO, "eveloader2 had the opportunity to overlay file %s however it didn't exist in the overlay at path %s", n.c_str(), overlay_path.c_str());
+            return CreateFileW(name, access, shareMode, sec, disp, flags, templ);
+        }
+
+        return CreateFileW(std::wstring(overlay_path.begin(), overlay_path.end()).c_str(), access, shareMode, sec, disp, flags, templ);
+    }
+
+    return CreateFileW(name, access, shareMode, sec, disp, flags, templ);
 }
