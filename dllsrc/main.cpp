@@ -12,6 +12,7 @@
 #include "hooks.h"
 
 #include <loguru/loguru.cpp>
+#include <eveloader_util.hpp>
 
 extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* inRemoteInfo);
 
@@ -60,8 +61,10 @@ static void start_console() {
 }
 
 void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
+    std::string log_path = get_overlay_path();
+    log_path.append("\\eveloader2_dll.log");
     // @TODO(NP): Save in ProgramFiles dir
-    loguru::add_file("eveloader2_dll.log", loguru::Truncate, loguru::Verbosity_INFO);
+    loguru::add_file(log_path.c_str(), loguru::Truncate, loguru::Verbosity_INFO);
     if (in_remote_info->UserDataSize != sizeof(eve_startup)) {
         MessageBoxA(nullptr, "UserDataSize != sizeof(eve_startup)\nlikely DLL/loader version mismatch.", "Error", MB_OK);
         exit(-100);

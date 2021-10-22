@@ -33,6 +33,9 @@ static void *memmem(const void *l, size_t l_len, const void *s, size_t s_len) {
     return NULL;
 }
 
+// compiler is requiring this forward declaration
+SHFOLDERAPI SHGetFolderPathA(_Reserved_ HWND hwnd, _In_ int csidl, _In_opt_ HANDLE hToken, _In_ DWORD dwFlags, _Out_writes_(MAX_PATH) LPSTR pszPath);
+
 static std::string get_overlay_path() {
     char path[MAX_PATH] = {0};
     SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA, NULL, 0, path);

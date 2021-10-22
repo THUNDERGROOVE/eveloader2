@@ -698,7 +698,7 @@ typedef void (*_EVEPyString_InternImmortal)(PyObject **);
 typedef PyObject * (*_EVEPyString_InternFromString)(const char *);
 typedef void (*_EVE_Py_ReleaseInternedStrings)(void);
 typedef PyObject * (*_EVE_PyString_Join)(PyObject *sep, PyObject *x);
-typedef int (*_EVEPyString_AsStringAndSize)( register PyObject *obj, register char **s, register Py_ssize_t *len);
+typedef int (*_EVEPyString_AsStringAndSize)( PyObject *obj, char **s, Py_ssize_t *len);
 typedef Py_ssize_t (*_EVE_PyString_InsertThousandsGroupingLocale)(char *buffer, Py_ssize_t n_buffer, char *digits, Py_ssize_t n_digits, Py_ssize_t min_width);
 typedef Py_ssize_t (*_EVE_PyString_InsertThousandsGrouping)(char *buffer, Py_ssize_t n_buffer, char *digits, Py_ssize_t n_digits, Py_ssize_t min_width, const char *grouping, const char *thousands_sep);
 typedef PyObject * (*_EVE_PyBytes_FormatAdvanced)(PyObject *obj, char *format_spec, Py_ssize_t format_spec_len);

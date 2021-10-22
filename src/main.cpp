@@ -208,7 +208,9 @@ int start_eve_client(char *host, char *username, char *password) {
 }
 
 int main() {
-    loguru::add_file("eveloader2.log", loguru::Truncate, loguru::Verbosity_INFO);
+    std::string log_path = get_overlay_path();
+    log_path.append("\\eveloader2.log");
+    loguru::add_file(log_path.c_str(), loguru::Truncate, loguru::Verbosity_INFO);
     loguru::g_colorlogtostderr = false;
     LOG_F(INFO, "eveloader2 is starting.");
     std::string overlay_path = get_overlay_path();
