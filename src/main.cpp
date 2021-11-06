@@ -186,6 +186,12 @@ int start_eve_client(char *host, char *username, char *password) {
         startup.flags |= EVE_STARTUP_FLAG_NOFSMAP;
     }
 
+    if (std::filesystem::exists("boot.py")) {
+        LOG_F(INFO, "boot.py found, setting as boot script.");
+        startup.flags |= EVE_STARTUP_FLAG_DO_BOOT_SCRIPT;
+        GetFullPathNameA("boot.py", MAX_PATH, startup.boot_script_path, NULL);
+    }
+
     NTSTATUS status = RhCreateAndInject(
             (wchar_t *)to_wide(exe_path).c_str(),
             (wchar_t *)to_wide(joined_args).c_str(),
@@ -212,6 +218,8 @@ int main() {
     log_path.append("\\eveloader2.log");
     loguru::add_file(log_path.c_str(), loguru::Truncate, loguru::Verbosity_INFO);
     loguru::g_colorlogtostderr = false;
+    SETUP_LOGURU_HANDLER
+
     LOG_F(INFO, "eveloader2 is starting.");
     std::string overlay_path = get_overlay_path();
     LOG_F(INFO, "fsmapper overlay path found to be %s", overlay_path.c_str());

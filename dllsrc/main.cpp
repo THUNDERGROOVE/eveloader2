@@ -16,7 +16,6 @@
 
 extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* inRemoteInfo);
 
-
 static void run_script(const char *script) {
     if (script == nullptr) {
         LOG_F(WARNING, "run_script called with null script value");
@@ -65,6 +64,7 @@ void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
     log_path.append("\\eveloader2_dll.log");
     // @TODO(NP): Save in ProgramFiles dir
     loguru::add_file(log_path.c_str(), loguru::Truncate, loguru::Verbosity_INFO);
+    SETUP_LOGURU_HANDLER
     if (in_remote_info->UserDataSize != sizeof(eve_startup)) {
         MessageBoxA(nullptr, "UserDataSize != sizeof(eve_startup)\nlikely DLL/loader version mismatch.", "Error", MB_OK);
         exit(-100);
@@ -73,7 +73,7 @@ void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
     hooks = new hook_manager();
 
 
-    if (!((startup->flags & EVE_STARTUP_FLAG_NOFSMAP) != 0)) {
+    if ((startup->flags & EVE_STARTUP_FLAG_NOFSMAP) == 0) {
         LOG_F(INFO, "Installing LoadLibraryA(FSMapper) hook!");
         hooks->install_hook(LoadLibraryA, _LoadLibraryA, "LoadLibraryA(FSMapper)");
         LOG_F(INFO, "Installing CreateFileW(FSMapper) hook!");
@@ -85,9 +85,28 @@ void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
     load_py_symbols();
 
     RhWakeUpProcess();
+
+    // TODO(NP): Find a way to verify that the game has been initialized enough to proceed.
+    Sleep(6000); // The magic number for most people, I hope!
+
+    if ((startup->flags & EVE_STARTUP_FLAG_DO_BOOT_SCRIPT) != 0) {
+        FILE *f = fopen(startup->boot_script_path, "r");
+        if (f == nullptr) {
+            LOG_F(FATAL, "Failed to open boot script at %s", startup->boot_script_path);
+        }
+
+        fseek(f, 0, SEEK_END);
+        size_t s = ftell(f);
+        rewind(f);
+
+        char *data = (char *)calloc(1, s+1);
+        fread(data, 1, s, f);
+        fclose(f);
+
+        LOG_F(INFO, "Running boot script at %s", startup->boot_script_path);
+        run_script(data);
+    }
     if ((startup->flags & EVE_STARTUP_FLAG_CONSOLE) != 0) {
-        // TODO(NP): Find a way to verify that the game has been initialized enough to proceed.
-        Sleep(6000); // The magic number for most people, I hope!
         start_console();
     }
 
