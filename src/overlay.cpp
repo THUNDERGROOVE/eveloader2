@@ -28,6 +28,40 @@ std::string get_blue_dll_path() {
     return base_path;
 }
 
+void fix_common_ini() {
+    LOG_F(INFO, "fixing common.ini\n");
+
+    std::string overlay_path = get_overlay_path();
+    std::string overlay_common_ini_path = overlay_path;
+    overlay_common_ini_path.append("\\common.ini");
+
+    std::string tmp = overlay_common_ini_path;
+    tmp.append(".tmp");
+    FILE *f = fopen(overlay_common_ini_path.c_str(), "r");
+    FILE *c = fopen(tmp.c_str(), "w");
+    fseek(f, 0, SEEK_END);
+    size_t size = ftell(f);
+    rewind(f);
+    char *data = (char *)calloc(1, size);
+    fread(data, 1, size, f);
+
+    char *line = strtok(data, "\n");
+    while (line) {
+        if (strstr(line, "cryptoPack") != NULL) {
+            LOG_F(INFO, "Setting Placebo crypto");
+            fprintf(c, "cryptoPack=Placebo\n");
+        } else {
+            fprintf(c, "%s\n", line);
+        }
+        line = strtok(NULL, "\n");
+    }
+    free(data);
+    fclose(f);
+    fclose(c);
+    CopyFileA(tmp.c_str(), overlay_common_ini_path.c_str(), false);
+    DeleteFileA(tmp.c_str());
+}
+
 void ensure_overlay_setup() {
     std::string overlay_path = get_overlay_path();
 
@@ -38,12 +72,24 @@ void ensure_overlay_setup() {
     std::string overlay_blue_dll = overlay_path;
     std::string base_blue_dll = cfg.eve_installation;
 
+
+    std::string overlay_start_ini_path = overlay_path;
+    std::string overlay_common_ini_path = overlay_path;
+
+    std::string base_start_ini_path = cfg.eve_installation;
+    std::string base_common_ini_path = cfg.eve_installation;
+
     overlay_logs_path.append("\\logs\\");
     overlay_bin_path.append("\\bin\\");
     overlay_script_path.append("\\script\\");
 
     overlay_blue_dll.append("\\bin\\blue.dll");
     base_blue_dll.append("\\bin\\blue.dll");
+
+    overlay_start_ini_path.append("\\start.ini");
+    base_start_ini_path.append("\\start.ini");
+    overlay_common_ini_path.append("\\common.ini");
+    base_common_ini_path.append("\\common.ini");
 
     if (CreateDirectoryA(overlay_path.c_str(), nullptr) || ERROR_ALREADY_EXISTS == GetLastError()) {
         LOG_F(INFO, "fsmapper overlay path exists");
@@ -88,5 +134,17 @@ void ensure_overlay_setup() {
         LOG_F(INFO, "overlay was missing blue.dll.  Installing from EVE installation.");
         CopyFileA(base_blue_dll.c_str(), overlay_blue_dll.c_str(), false);
     }
+
+    if (!std::filesystem::exists(overlay_common_ini_path.c_str())) {
+        LOG_F(INFO, "overlay was missing common.ini.  Installing from EVE installation.");
+        CopyFileA(base_common_ini_path.c_str(), overlay_common_ini_path.c_str(), false);
+    }
+
+    if (!std::filesystem::exists(overlay_start_ini_path.c_str())) {
+        LOG_F(INFO, "overlay was missing start.ini.  Installing from EVE installation.");
+        CopyFileA(base_start_ini_path.c_str(), overlay_start_ini_path.c_str(), false);
+    }
+
+    fix_common_ini();
 }
 

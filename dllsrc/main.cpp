@@ -4,7 +4,6 @@
 
 #include <easyhook/easyhook.h>
 
-
 #include "pyloader.h"
 #include "pydecls.h"
 #include "eveloader.h"

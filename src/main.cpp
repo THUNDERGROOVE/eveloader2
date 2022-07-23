@@ -82,6 +82,8 @@ void run_initial_setup() {
 
     cfg.eve_installation = find_eve_install();
 
+    cfg.use_console = false;
+    /*
     int res2 = MessageBoxA(nullptr,
                            "Would you like to enable the interactive console?\nThis option is intended for developers",
                            "eveloader2 - First run",
@@ -91,6 +93,7 @@ void run_initial_setup() {
     } else {
         cfg.use_console = false;
     }
+     */
 
     int res3 = MessageBoxA(nullptr,
                            "Would you like to enable the filesystem overlay system?\nIt is recommended that this option is enabled.",

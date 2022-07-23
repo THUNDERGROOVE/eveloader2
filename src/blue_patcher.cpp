@@ -18,6 +18,9 @@
 
 #include <filesystem>
 
+#define CRUCIBLE_BLUE_DLL_CRC32 0x965BDFFD
+#define CRUCIBLE_BLUE_STSCHAKE_DLL_CRC32 0x5DEB44AE
+
 uint32_t get_crc32(const char *filename) {
     FILE *f = fopen(filename, "rb");
     if (f == nullptr) {
