@@ -71,6 +71,7 @@ add_custom_target(eveloader2_release_zip COMMAND
         "${CMAKE_CURRENT_BINARY_DIR}/eveloader2.exe"
         "${CMAKE_CURRENT_BINARY_DIR}/eveloader2_dll.dll"
         "${CMAKE_CURRENT_BINARY_DIR}/EasyHook32.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/README"
         )
 
 add_dependencies(eveloader2_release_zip eveloader2)
