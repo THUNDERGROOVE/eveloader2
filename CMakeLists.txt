@@ -67,11 +67,11 @@ else()
 endif()
 
 add_custom_target(eveloader2_release_zip COMMAND
-        ${CMAKE_COMMAND} -E tar "cfv" "release.zip" --format=zip
+        "C:/Program Files/7-Zip/7z.exe" "a" "-t7z" "eveloader2-${CMAKE_BUILD_TYPE}.7z"
         "${CMAKE_CURRENT_BINARY_DIR}/eveloader2.exe"
         "${CMAKE_CURRENT_BINARY_DIR}/eveloader2_dll.dll"
         "${CMAKE_CURRENT_BINARY_DIR}/EasyHook32.dll"
-        "${CMAKE_CURRENT_SOURCE_DIR}/README"
+        "${CMAKE_CURRENT_SOURCE_DIR}/readme.md"
         )
 
 add_dependencies(eveloader2_release_zip eveloader2)

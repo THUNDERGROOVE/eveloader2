@@ -31,7 +31,7 @@ static patch patches[] = {
         // Nop out the JNE that does the error reporting
         {"CRC Checks(Blue Patcher)", "\x0F\x85\x8C\x02\x00\x00\xFF\x15\x7C\x82\x15\x10\x3D\x06", "\x90\xE9\x8C\x02\x00\x00\xFF\x15\x7C\x82\x15\x10\x3D\x06", 14},
         // Overwrite embedded key with our own
-        {"Code Signing", original_sign_key_hex, (char *)codeSigKey, 148},
+        //{"Code Signing", original_sign_key_hex, (char *)codeSigKey, 148},
         // Change JNE to JMP for verification ok
         {"VerifyManifestFile", "\x0F\x85\x1C\x01\x00\x00\xFF", "\xe9\x1d\x01\x00\x00\x00\x00", 7},
         // During initialization of the array of PyMethodDef for BluePyOS within blue.dll

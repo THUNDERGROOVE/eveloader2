@@ -8,8 +8,6 @@ by default if you just run `eveloader2.exe` for the first time it will prompt yo
 1. it will ask for your game installation, navigate to it and click Ok.
 2. next it will ask if you want to enable the filesystem overlay, I totally recommend it, but you may want to see the [fsmapper section](#fsmapper)
 3. the game should open, at this point I'd recommend looking at making [shortcuts](#shortcuts)
-4. final setup - ensure `cryptoPack=Placebo` is set in `common.ini`
-    1. if using fsmapper copy `common.ini` and `start.ini` to `C:\ProgramData\eveloader2`
 ```shell
 eveloader2.exe -u <username> -p <password> -h <host>
 ```
@@ -26,7 +24,7 @@ use_console = true
 use_fsmapper = true
 ```
 ## patching
-every time eveloader2 runs it scans the game's blue.dll file and attempt to help you patch it if needed.  it can tell between the following states
+every time eveloader2 runs it scans the game's blue.dll file and attempt to help you patch it if needed.  it can tell between the following states.
 
 - stock from CCP
 - [stschake's blue_patcher](https://github.com/stschake/blue_patcher)
@@ -35,7 +33,7 @@ every time eveloader2 runs it scans the game's blue.dll file and attempt to help
 1. if blue.dll is stock, it will ask if you want to patch it.
 2. if blue.dll is blue_patcher or unknown, it will tell you to restore a backup before proceeding
 3. if blue.dll is our patch, we proceed
-
+4. eveloader2 will attempt patch `common.ini` to set `crytpoPack=Placebo` 
 
 ## fsmapper
 fsmapper allows eveloader2 and **you** to modify the client without directly tampering with the installation.  this is done by redirecting the game's calls to `_CreateFileW` which effectively allows us to redirect that to anywhere else on the disk.
@@ -61,6 +59,10 @@ if you create a shortcut to `eveloader2.exe` if you right-click, properties you 
 ```shell
 "C:\Users\nick\source\repos\eveloader2\cmake-build-release\eveloader2.exe" -u <username> -p <password> -h <host>
 ```
+## build requirements
+i get it to build in clion 2022, you can probably use command line cmake if you desired
+you probably need
+- .net framework 4.7.2 developer pack for easyhook
 
 ## disclaimer
 eveloader2 is an educational project to learn more about the internals of the EVE online client.  I do not condone any of eveloader2 to be used with any modern clients.
