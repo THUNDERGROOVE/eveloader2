@@ -8,6 +8,7 @@
 #include <loguru/loguru.hpp>
 #include <algorithm>
 #include <filesystem>
+#include <wincrypt.h>
 
 HMODULE WINAPI _LoadLibraryA(const char *libname) {
     std::string overlay_path = get_overlay_path();
@@ -78,8 +79,35 @@ HANDLE WINAPI _CreateFileW(LPCWSTR name, DWORD access, DWORD shareMode, LPSECURI
             return CreateFileW(name, access, shareMode, sec, disp, flags, templ);
         }
 
+        LOG_F(INFO, "Overloading file %s -> %s\n", n.c_str(), overlay_path.c_str());
         return CreateFileW(std::wstring(overlay_path.begin(), overlay_path.end()).c_str(), access, shareMode, sec, disp, flags, templ);
     }
 
     return CreateFileW(name, access, shareMode, sec, disp, flags, templ);
 }
+
+BOOL _CryptEncrypt(
+      HCRYPTKEY  hKey,
+      HCRYPTHASH hHash,
+      BOOL       Final,
+      DWORD      dwFlags,
+      BYTE       *pbData,
+      DWORD      *pdwDataLen,
+      DWORD      dwBufLen
+) {
+    LOG_F(INFO, "_CryptEncrypt hit!\n");
+    *pdwDataLen = dwBufLen;
+    return TRUE;
+}
+
+BOOL _CryptDecrypt(
+      HCRYPTKEY  hKey,
+      HCRYPTHASH hHash,
+      BOOL       Final,
+      DWORD      dwFlags,
+      BYTE       *pbData,
+      DWORD      *pdwDataLen
+) {
+    LOG_F(INFO, "_CryptDecrypt hit!\n");
+    return TRUE;
+};

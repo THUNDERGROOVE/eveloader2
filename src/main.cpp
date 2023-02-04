@@ -189,6 +189,14 @@ int start_eve_client(char *host, char *username, char *password) {
         startup.flags |= EVE_STARTUP_FLAG_NOFSMAP;
     }
 
+    if (cfg.debug_wait) {
+        startup.flags |= EVE_STARTUP_FLAG_DEBUG_WAIT;
+    }
+
+    if (cfg.disable_crypto) {
+        startup.flags |= EVE_STARTUP_FLAG_DISABLE_CRYPTO;
+    }
+
     if (std::filesystem::exists("boot.py")) {
         LOG_F(INFO, "boot.py found, setting as boot script.");
         startup.flags |= EVE_STARTUP_FLAG_DO_BOOT_SCRIPT;
@@ -198,7 +206,7 @@ int start_eve_client(char *host, char *username, char *password) {
     NTSTATUS status = RhCreateAndInject(
             (wchar_t *)to_wide(exe_path).c_str(),
             (wchar_t *)to_wide(joined_args).c_str(),
-            0,
+            CREATE_SUSPENDED,
             EASYHOOK_INJECT_DEFAULT,
             (wchar_t *)to_wide(dll_path).c_str(),
             nullptr,

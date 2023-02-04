@@ -31,7 +31,7 @@ set(eveloader2_src
         src/crc32.cpp
         src/crc32.h
         include/eveloader_util.hpp
-        )
+        src/patches.cpp)
 
 set(eveloader2_dll_src
         dllsrc/dllmain.cpp

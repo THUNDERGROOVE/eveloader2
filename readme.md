@@ -54,6 +54,21 @@ below are some files we support.
 - `lib/evelib.ccp` - this allows the user to inject their own code here
 
 you will also get logs stored here `eveloader2.log` and `eveloader2_dll.log`.  If you run into any issues these will be helpful.
+## custom/dynamic patches
+you can tell eveloader2 to do additional patching via the `patches.ini` file.  an example of that is below.
+
+```ini
+[patches]
+patch_list=public_key
+
+[public_key]
+name="Patch public key"
+# original_data and patched_data should be relative paths to files.  
+# the files should always be the same size or an error will be shown.
+# we will find the original_data contents in blue.dll and overwrite it with patched_data contents
+original_data=./patches/original_pub_key
+patched_data=./patches/evecc.keys.pub
+```
 ## shortcuts
 if you create a shortcut to `eveloader2.exe` if you right-click, properties you can modify the Target field similar to below to automatically log in to your server.
 ```shell

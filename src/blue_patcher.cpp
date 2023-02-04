@@ -69,7 +69,7 @@ static bool is_our_blue_patch() {
     return true;
 }
 
-static void patch_blue() {
+static void patch_blue(bool dynamic_only = false) {
     std::string blue_path = get_blue_dll_path();
 
     FILE *f = fopen(blue_path.c_str(), "rb");
@@ -85,14 +85,37 @@ static void patch_blue() {
     fread(data, 1, s, f);
     fclose(f);
 
-    patch *p = patches;
+    if (!dynamic_only) {
+        patch *p = patches;
 
-    while (p->name != nullptr) {
+        while (p->name != nullptr) {
+            char *loc = (char *) memmem(data, s, p->original, p->size);
+            if (loc == nullptr) {
+                void *t = memmem(data, s, p->updated, p->size);
+                if (p != nullptr) {
+                    p++;
+                    continue;
+                }
+
+                MessageBoxA(NULL, "Failed to find memory pattern for patch\neveloader2 aborting", p->name, MB_OK);
+                LOG_F(ERROR, "Unable to find memory pattern for patch %s", p->name);
+                exit(-1);
+            } else {
+                memcpy(loc, p->updated, p->size);
+                LOG_F(INFO, "Patch OK %s", p->name);
+            }
+            p++;
+        }
+    }
+
+    std::vector<patch> ini_patches = load_patches_ini();
+    for (int i = 0; i < ini_patches.size(); i++) {
+        patch *p = &ini_patches[i];
         char *loc = (char *)memmem(data, s, p->original, p->size);
         if (loc == nullptr) {
             void *t = memmem(data, s, p->updated, p->size);
-            if (p != nullptr) {
-                p++;
+            if (t != nullptr) {
+                LOG_F(INFO, "Patch %s already applied!\n", p->name);
                 continue;
             }
 
@@ -103,7 +126,6 @@ static void patch_blue() {
             memcpy(loc, p->updated, p->size);
             LOG_F(INFO, "Patch OK %s", p->name);
         }
-        p++;
     }
 
     FILE *b = fopen(blue_path.c_str(), "wb");
@@ -155,7 +177,8 @@ void check_blue_patch() {
                 );
         exit(-204);
     } else if (is_our_blue_patch()) {
-        LOG_F(INFO, "check_blue_patch blue.dll detected to be eveloader2 patched");
+        LOG_F(INFO, "check_blue_patch blue.dll detected to be eveloader2 patched.  Dispatching dynamic patches");
+        patch_blue(true);
     } else {
         LOG_F(ERROR, "check_blue_patch couldn't determine blue.dll type");
         MessageBoxA(

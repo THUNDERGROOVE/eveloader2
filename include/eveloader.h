@@ -11,6 +11,8 @@
 #define EVE_STARTUP_FLAG_CONSOLE        ((uint64_t)1 << 1)
 #define EVE_STARTUP_FLAG_NOFSMAP        ((uint64_t)1 << 2)
 #define EVE_STARTUP_FLAG_DO_BOOT_SCRIPT ((uint64_t)1 << 3)
+#define EVE_STARTUP_FLAG_DEBUG_WAIT ((uint64_t)1 << 4)
+#define EVE_STARTUP_FLAG_DISABLE_CRYPTO ((uint64_t)1 << 5)
 
 #define LOADER_CONFIG "config.ini"
 #define OVERLAY_PATH "\\eveloader2"

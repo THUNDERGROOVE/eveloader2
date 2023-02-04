@@ -12,6 +12,7 @@
 
 #include <loguru/loguru.cpp>
 #include <eveloader_util.hpp>
+#include <conio.h>
 
 extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* inRemoteInfo);
 
@@ -79,9 +80,20 @@ void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* in_remote_info) {
         hooks->install_hook(CreateFileW, _CreateFileW, "CreateFileW(FSMapper)");
     }
 
+    if ((startup->flags & EVE_STARTUP_FLAG_DISABLE_CRYPTO) != 0) {
+        LOG_F(INFO, "Installing CryptEncrypt(disable_crypto) hook!");
+        hooks->install_hook(CryptEncrypt, _CryptEncrypt, "CryptEncrypt(disable_crypto)");
+        LOG_F(INFO, "Installing CryptDecrypt(disable_crypto) hook!");
+        hooks->install_hook(CryptDecrypt, _CryptDecrypt, "CryptEncrypt(disable_crypto)");
+    }
+
     //Sleep(2000);
     LOG_F(INFO, "Loading python symbols.");
     load_py_symbols();
+    if ((startup->flags & EVE_STARTUP_FLAG_DEBUG_WAIT) != 0) {
+        LOG_F(INFO, "Delaying start to allow debugger attach\n");
+        system("pause");
+    }
 
     RhWakeUpProcess();
 

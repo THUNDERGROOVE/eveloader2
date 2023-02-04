@@ -17,6 +17,8 @@ struct configuration {
     std::string eve_installation;
     bool use_console;
     bool use_fsmapper;
+    bool debug_wait;
+    bool disable_crypto;
 };
 
 extern configuration cfg;

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="eveloader2" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-h eve.alasiya.net" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="eveloader2" TARGET_NAME="eveloader2" CONFIG_NAME="Debug-VS2019" RUN_TARGET_PROJECT_NAME="eveloader2" RUN_TARGET_NAME="eveloader2">
+  <configuration default="false" name="eveloader2" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="eveloader2" TARGET_NAME="eveloader2" CONFIG_NAME="Debug-VS2019" RUN_TARGET_PROJECT_NAME="eveloader2" RUN_TARGET_NAME="eveloader2">
     <method v="2">
       <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
     </method>

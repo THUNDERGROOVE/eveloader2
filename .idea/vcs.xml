@@ -2,9 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/vcpkg" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug-vs2019/vcpkg" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-release-visual-studio/vcpkg" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-release-vs2019/vcpkg" vcs="Git" />
   </component>
 </project>
