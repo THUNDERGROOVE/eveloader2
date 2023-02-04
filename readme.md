@@ -70,7 +70,7 @@ original_data=./patches/original_pub_key
 patched_data=./patches/evecc.keys.pub
 ```
 ## shortcuts
-if you create a shortcut to `eveloader2.exe` if you right-click, properties you can modify the Target field similar to below to automatically log in to your server.
+if you create a shortcut to `eveloader2.exe` you can right-click, go into properties andmodify the Target field similar to below to automatically log in to your server.
 ```shell
 "C:\Users\nick\source\repos\eveloader2\cmake-build-release\eveloader2.exe" -u <username> -p <password> -h <host>
 ```
