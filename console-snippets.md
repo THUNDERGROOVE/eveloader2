@@ -14,3 +14,9 @@ for skill in skills:
     sm.GetService('slash').SlashCmd('/giveskill me {} 5'.format(skill.typeID))
 
 ```
+
+## Toggle extrapolation of objects in space
+
+``` python
+sm.GetService('movementClient').ToggleExtrapolation()
+```
