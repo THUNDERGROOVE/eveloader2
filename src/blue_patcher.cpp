@@ -130,7 +130,7 @@ static void patch_blue(bool dynamic_only = false) {
 
     FILE *b = fopen(blue_path.c_str(), "wb");
 
-    if (f == nullptr) {
+    if (b == nullptr) {
         LOG_F(ERROR, "Failed to open %s for reading", blue_path.c_str());
         exit(-1);
     }
