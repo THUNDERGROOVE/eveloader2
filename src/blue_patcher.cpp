@@ -168,7 +168,20 @@ void check_blue_patch() {
             patch_blue();
         }
     } else if (blue_crc == CRUCIBLE_BLUE_STSCHAKE_DLL_CRC32) {
+        std::string install_blue = get_installation_blue_dll_path();
         LOG_F(ERROR, "check_blue_patch blue.dll detected to be patched with stschake/blue_patcher");
+        LOG_F(INFO, "checking if we can find a new clean version from installation path...");
+        if (!std::filesystem::exists(install_blue)) {
+            LOG_F(ERROR, "check_blue_patch blue.dll missing from installation path?");
+        }
+        uint32_t install_crc = get_crc32(install_blue.c_str());
+        if (install_crc == CRUCIBLE_BLUE_DLL_CRC32) {
+            CopyFileA(install_blue.c_str(), blue_path.c_str(), false);
+            patch_blue();
+            LOG_F(INFO, "check_blue_patch copied new clean blue.dll from installation and patched!");
+            patch_blue(true);
+            return;
+        }
         MessageBoxA(
                 NULL,
                 "eveloader2 has detected that blue.dll was patched with stschake/blue_patcher\nPlease restore a clean version of blue.dll before proceeding\neveloader2 will shut down now.",
