@@ -15,6 +15,12 @@
 #include <filesystem>
 
 
+std::string get_installation_blue_dll_path() {
+    std::string base_path = cfg.eve_installation;
+    base_path.append("\\bin\\blue.dll");
+    return base_path;
+}
+
 std::string get_blue_dll_path() {
     std::string base_path = std::string();
     if (cfg.use_fsmapper) {
