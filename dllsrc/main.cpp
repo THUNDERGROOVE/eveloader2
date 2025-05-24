@@ -10,7 +10,7 @@
 #include "hook_manager.h"
 #include "hooks.h"
 
-#include <loguru/loguru.cpp>
+#include <loguru/loguru.hpp>
 #include <eveloader_util.hpp>
 #include <conio.h>
 

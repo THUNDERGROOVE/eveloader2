@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <easyhook/easyhook.h>
-#include <loguru/loguru.cpp>
+//#include <loguru/loguru.cpp>
 #include <loguru/loguru.hpp>
 
 #include "eveloader.h"

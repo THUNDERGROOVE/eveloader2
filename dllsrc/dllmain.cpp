@@ -2,7 +2,7 @@
 // Created by Nick on 10/19/2021.
 //
 
-#include <windows.h>
+#include <eveloader.h>
 BOOL APIENTRY DllMain(HMODULE hModule,
                       DWORD  ul_reason_for_call,
                       LPVOID lpReserved

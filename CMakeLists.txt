@@ -48,13 +48,15 @@ set(eveloader2_dll_src
 add_executable(eveloader2 ${eveloader2_src})
 add_library(eveloader2_dll SHARED ${eveloader2_dll_src})
 
+find_package(loguru CONFIG REQUIRED)
+
 target_include_directories(eveloader2 PUBLIC SYSTEM "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include" "${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/src/")
 target_link_directories(eveloader2 PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
-target_link_libraries(eveloader2 PRIVATE "easyhook32.lib")
+target_link_libraries(eveloader2 PRIVATE "easyhook32.lib" loguru::loguru)
 
 target_include_directories(eveloader2_dll PUBLIC SYSTEM "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include" "${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/deps/python/include" "${CMAKE_SOURCE_DIR}/deps/python/include/Stackless")
 target_link_directories(eveloader2_dll PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib" "${CMAKE_SOURCE_DIR}/deps/python/lib")
-target_link_libraries(eveloader2_dll PRIVATE  "easyhook32.lib" "psapi.lib")
+target_link_libraries(eveloader2_dll PRIVATE  "easyhook32.lib" "psapi.lib" loguru::loguru)
 
 add_dependencies(eveloader2 eveloader2_dll)
 
